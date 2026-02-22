@@ -148,13 +148,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Railway CLI
+        run: curl -fsSL https://railway.app/install.sh | sh
+
       - name: Deploy to Railway staging
-        uses: bervProject/railway-deploy@main
+        run: railway up --service=${{ secrets.RAILWAY_SERVICE_ID }} --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_STAGING }}
-        with:
-          service: ${{ secrets.RAILWAY_SERVICE_ID }}
-          detach: true
 
   # ─── Job 5 : Deploy Production (Railway main) ─────────────
   deploy-production:
@@ -166,10 +166,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Railway CLI
+        run: curl -fsSL https://railway.app/install.sh | sh
+
       - name: Deploy to Railway production
-        uses: bervProject/railway-deploy@main
+        run: railway up --service=${{ secrets.RAILWAY_SERVICE_ID }} --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_PROD }}
-        with:
-          service: ${{ secrets.RAILWAY_SERVICE_ID }}
-          detach: true

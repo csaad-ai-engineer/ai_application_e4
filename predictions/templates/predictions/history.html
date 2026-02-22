@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Mon historique{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="page-header page-header--row">
+    <div>
+      <h1>Mon <span class="accent">historique</span></h1>
+      <p class="subtitle">Toutes vos estimations immobilières.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'export_csv' %}" class="btn-secondary btn-sm" aria-label="Exporter en CSV">⬇ CSV</a>
+      <a href="{% url 'export_json' %}" class="btn-secondary btn-sm" aria-label="Exporter en JSON">⬇ JSON</a>
+    </div>
+  </header>
+
+  <!-- Filtres -->
+  <details class="filter-panel">
+    <summary>Filtrer les résultats</summary>
+    <form method="get" class="filter-form" aria-label="Formulaire de filtres">
+      <div class="form-row form-row--4col">
+        <div class="form-group">
+          <label for="{{ filter_form.type_local.id_for_label }}">Type</label>
+          {{ filter_form.type_local }}
+        </div>
+        <div class="form-group">
+          <label for="{{ filter_form.code_departement.id_for_label }}">Département</label>
+          {{ filter_form.code_departement }}
+        </div>
+        <div class="form-group">
+          <label for="{{ filter_form.date_debut.id_for_label }}">Du</label>
+          {{ filter_form.date_debut }}
+        </div>
+        <div class="form-group">
+          <label for="{{ filter_form.date_fin.id_for_label }}">Au</label>
+          {{ filter_form.date_fin }}
+        </div>
+      </div>
+      <button type="submit" class="btn-primary btn-sm">Filtrer</button>
+      <a href="{% url 'prediction_history' %}" class="btn-ghost btn-sm">Réinitialiser</a>
+    </form>
+  </details>
+
+  {% if page_obj.object_list %}
+  <div class="table-wrapper" role="region" aria-label="Tableau de vos estimations" tabindex="0">
+    <table class="data-table">
+      <caption class="sr-only">Liste de vos estimations immobilières</caption>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Date</th>
+          <th scope="col">Type</th>
+          <th scope="col">Dept.</th>
+          <th scope="col">Surface</th>
+          <th scope="col">Prix estimé</th>
+          <th scope="col">Statut</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in page_obj %}
+        <tr>
+          <td>{{ p.pk }}</td>
+          <td>{{ p.created_at|date:"d/m/Y" }}</td>
+          <td>{{ p.type_local }}</td>
+          <td>{{ p.code_departement }}</td>
+          <td>{{ p.surface_reelle_bati }} m²</td>
+          <td class="price">
+            {% if p.prix_estime %}{{ p.prix_estime|floatformat:0 }} €{% else %}—{% endif %}
+          </td>
+          <td>
+            <span class="badge badge--{{ p.status }}">{{ p.get_status_display }}</span>
+          </td>
+          <td>
+            <a href="{% url 'prediction_detail' p.pk %}" aria-label="Voir le détail de l'estimation #{{ p.pk }}">Détail</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <nav class="pagination" aria-label="Pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Page précédente">←</a>
+    {% endif %}
+    <span class="page-info">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Page suivante">→</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <p>Aucune estimation trouvée.</p>
+    <a href="{% url 'predict' %}" class="btn-primary">Faire une estimation</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

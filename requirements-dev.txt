@@ -1,0 +1,12 @@
+# Tests
+pytest==8.3.2
+pytest-django==4.8.0
+pytest-cov==5.0.0
+
+# Qualité du code
+flake8==7.1.1
+black==24.8.0
+isort==5.13.2
+
+# Debug (optionnel)
+django-debug-toolbar==4.4.6

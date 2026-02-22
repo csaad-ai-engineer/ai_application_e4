@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="page-header">
+    <h1>Bonjour, <span class="accent">{{ user.username }}</span></h1>
+    <p class="subtitle">Votre espace d'estimation immobilière par IA</p>
+  </header>
+
+  <!-- Statistiques globales -->
+  <section class="stats-grid" aria-label="Vos statistiques">
+    <div class="stat-card">
+      <span class="stat-value">{{ stats.total|default:"0" }}</span>
+      <span class="stat-label">Estimations réalisées</span>
+    </div>
+    {% if stats.prix_moyen %}
+    <div class="stat-card">
+      <span class="stat-value">{{ stats.prix_moyen|floatformat:0 }} €</span>
+      <span class="stat-label">Prix moyen estimé</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ stats.prix_min|floatformat:0 }} €</span>
+      <span class="stat-label">Estimation la plus basse</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ stats.prix_max|floatformat:0 }} €</span>
+      <span class="stat-label">Estimation la plus haute</span>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Actions rapides -->
+  <section class="actions-section" aria-label="Actions rapides">
+    <h2>Actions rapides</h2>
+    <div class="action-cards">
+      <a href="{% url 'predict' %}" class="action-card" aria-label="Faire une nouvelle estimation individuelle">
+        <div class="action-icon" aria-hidden="true">🏠</div>
+        <h3>Nouvelle estimation</h3>
+        <p>Estimez le prix d'un bien en quelques secondes.</p>
+      </a>
+      <a href="{% url 'batch_upload' %}" class="action-card" aria-label="Traitement en lot via fichier CSV">
+        <div class="action-icon" aria-hidden="true">📋</div>
+        <h3>Batch CSV</h3>
+        <p>Estimez plusieurs biens en une seule fois.</p>
+      </a>
+      <a href="{% url 'prediction_history' %}" class="action-card" aria-label="Consulter votre historique">
+        <div class="action-icon" aria-hidden="true">📊</div>
+        <h3>Mon historique</h3>
+        <p>Retrouvez toutes vos estimations passées.</p>
+      </a>
+      <a href="{% url 'export_csv' %}" class="action-card" aria-label="Exporter vos données en CSV">
+        <div class="action-icon" aria-hidden="true">⬇️</div>
+        <h3>Exporter</h3>
+        <p>Téléchargez vos données au format CSV ou JSON.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Estimations récentes -->
+  {% if recent %}
+  <section class="recent-section" aria-label="Estimations récentes">
+    <div class="section-header">
+      <h2>Estimations récentes</h2>
+      <a href="{% url 'prediction_history' %}" class="link-more">Voir tout →</a>
+    </div>
+    <div class="table-wrapper" role="region" aria-label="Tableau des estimations récentes" tabindex="0">
+      <table class="data-table">
+        <caption class="sr-only">Vos 5 dernières estimations</caption>
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Type</th>
+            <th scope="col">Département</th>
+            <th scope="col">Surface</th>
+            <th scope="col">Prix estimé</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in recent %}
+          <tr>
+            <td>{{ p.created_at|date:"d/m/Y" }}</td>
+            <td>{{ p.type_local }}</td>
+            <td>{{ p.code_departement }}</td>
+            <td>{{ p.surface_reelle_bati }} m²</td>
+            <td class="price">{{ p.prix_estime|floatformat:0 }} €</td>
+            <td><a href="{% url 'prediction_detail' p.pk %}">Détail</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% else %}
+  <div class="empty-state">
+    <p>Vous n'avez pas encore réalisé d'estimation.</p>
+    <a href="{% url 'predict' %}" class="btn-primary">Faire ma première estimation</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

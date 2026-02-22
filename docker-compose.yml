@@ -1,0 +1,45 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      SECRET_KEY: changeme-dev-only
+      DEBUG: "True"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,web"
+      PREDICTION_API_URL: "http://host.docker.internal:8000"
+      PREDICTION_API_USERNAME: "user"
+      PREDICTION_API_PASSWORD: "user"
+      GUNICORN_CMD_ARGS: "--bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile -"
+    volumes:
+      - .:/app
+      - /app/.venv
+    command: ["sh", "-c", "python manage.py migrate && gunicorn immo_predictor.wsgi:application"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=15d'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:
+  grafana_data:

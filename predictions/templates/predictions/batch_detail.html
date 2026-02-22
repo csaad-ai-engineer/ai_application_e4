@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Batch #{{ batch.pk }}{% endblock %}
+
+{% block content %}
+<div class="container container--narrow">
+  <a href="{% url 'batch_upload' %}" class="back-link">← Nouvel import</a>
+  <header class="page-header">
+    <h1>Batch <span class="accent">#{{ batch.pk }}</span></h1>
+    <p class="subtitle">{{ batch.created_at|date:"d/m/Y à H:i" }}</p>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ batch.nb_lignes }}</span>
+      <span class="stat-label">Lignes traitées</span>
+    </div>
+    <div class="stat-card stat-card--success">
+      <span class="stat-value">{{ batch.nb_succes }}</span>
+      <span class="stat-label">Succès</span>
+    </div>
+    <div class="stat-card stat-card--error">
+      <span class="stat-value">{{ batch.nb_erreurs }}</span>
+      <span class="stat-label">Erreurs</span>
+    </div>
+  </div>
+
+  <dl class="detail-list">
+    <div class="detail-item">
+      <dt>Statut</dt>
+      <dd><span class="badge badge--{{ batch.status }}">{{ batch.get_status_display }}</span></dd>
+    </div>
+    {% if batch.error_message %}
+    <div class="detail-item">
+      <dt>Message d'erreur</dt>
+      <dd class="error-text">{{ batch.error_message }}</dd>
+    </div>
+    {% endif %}
+  </dl>
+
+  <div class="form-actions">
+    <a href="{% url 'prediction_history' %}" class="btn-primary">Voir l'historique</a>
+  </div>
+</div>
+{% endblock %}

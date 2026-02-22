@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ImmoPredictor{% endblock %} — Estimation immobilière IA</title>
+  <meta name="description" content="Estimez le prix de votre bien immobilier grâce à l'intelligence artificielle.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <header class="site-header" role="banner">
+    <nav class="navbar" aria-label="Navigation principale">
+      <a href="/" class="brand" aria-label="ImmoPredictor — Accueil">
+        <span class="brand-icon" aria-hidden="true">⬡</span>
+        <span class="brand-name">ImmoPredictor</span>
+      </a>
+
+      {% if user.is_authenticated %}
+      <ul class="nav-links" role="list">
+        <li><a href="{% url 'predict' %}" {% if request.resolver_match.url_name == 'predict' %}aria-current="page"{% endif %}>Nouvelle estimation</a></li>
+        <li><a href="{% url 'prediction_history' %}" {% if request.resolver_match.url_name == 'prediction_history' %}aria-current="page"{% endif %}>Historique</a></li>
+        <li><a href="{% url 'batch_upload' %}" {% if request.resolver_match.url_name == 'batch_upload' %}aria-current="page"{% endif %}>Batch CSV</a></li>
+      </ul>
+      <div class="nav-user">
+        <span class="nav-username">{{ user.username }}</span>
+        <a href="{% url 'profile' %}">Profil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="btn-ghost">Déconnexion</button>
+        </form>
+      </div>
+      {% else %}
+      <ul class="nav-links" role="list">
+        <li><a href="{% url 'login' %}">Connexion</a></li>
+        <li><a href="{% url 'register' %}" class="btn-primary-sm">Créer un compte</a></li>
+      </ul>
+      {% endif %}
+    </nav>
+  </header>
+
+  {% if messages %}
+  <div class="messages" role="alert" aria-live="polite">
+    {% for message in messages %}
+    <div class="message message--{{ message.tags }}">
+      <span>{{ message }}</span>
+      <button class="message-close" aria-label="Fermer" onclick="this.parentElement.remove()">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main id="main-content" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <p>© 2026 ImmoPredictor — Projet E4 RNCP37827</p>
+      <nav aria-label="Liens légaux">
+        <a href="{% url 'export_data' %}">Exporter mes données</a>
+        <a href="{% url 'request_deletion' %}">Droit à l'oubli</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

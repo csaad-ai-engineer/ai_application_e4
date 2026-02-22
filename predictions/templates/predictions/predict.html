@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Nouvelle estimation{% endblock %}
+
+{% block content %}
+<div class="container container--narrow">
+  <header class="page-header">
+    <h1>Nouvelle <span class="accent">estimation</span></h1>
+    <p class="subtitle">Obtenez une estimation précise du prix de votre bien par notre modèle d'intelligence artificielle.</p>
+  </header>
+
+  <form method="post" action="{% url 'predict' %}" class="prediction-form" novalidate aria-label="Formulaire d'estimation immobilière">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>Type et surface du bien</legend>
+      <div class="form-row">
+        <div class="form-group {% if form.type_local.errors %}has-error{% endif %}">
+          <label for="{{ form.type_local.id_for_label }}">{{ form.type_local.label }} <span aria-hidden="true" class="required-star">*</span></label>
+          {{ form.type_local }}
+          {% if form.type_local.errors %}<span class="error-msg" role="alert">{{ form.type_local.errors.0 }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="form-row form-row--2col">
+        <div class="form-group {% if form.surface_reelle_bati.errors %}has-error{% endif %}">
+          <label for="{{ form.surface_reelle_bati.id_for_label }}">{{ form.surface_reelle_bati.label }} <span aria-hidden="true" class="required-star">*</span></label>
+          {{ form.surface_reelle_bati }}
+          {% if form.surface_reelle_bati.errors %}<span class="error-msg" role="alert">{{ form.surface_reelle_bati.errors.0 }}</span>{% endif %}
+        </div>
+        <div class="form-group {% if form.nombre_pieces_principales.errors %}has-error{% endif %}">
+          <label for="{{ form.nombre_pieces_principales.id_for_label }}">{{ form.nombre_pieces_principales.label }} <span aria-hidden="true" class="required-star">*</span></label>
+          {{ form.nombre_pieces_principales }}
+          {% if form.nombre_pieces_principales.errors %}<span class="error-msg" role="alert">{{ form.nombre_pieces_principales.errors.0 }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="{{ form.surface_terrain.id_for_label }}">{{ form.surface_terrain.label }}</label>
+        {{ form.surface_terrain }}
+        <span class="field-hint">Uniquement pour les maisons.</span>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Localisation</legend>
+      <div class="form-group {% if form.code_departement.errors %}has-error{% endif %}">
+        <label for="{{ form.code_departement.id_for_label }}">{{ form.code_departement.label }} <span aria-hidden="true" class="required-star">*</span></label>
+        {{ form.code_departement }}
+        {% if form.code_departement.errors %}<span class="error-msg" role="alert">{{ form.code_departement.errors.0 }}</span>{% endif %}
+      </div>
+      <div class="form-row form-row--2col">
+        <div class="form-group {% if form.latitude.errors %}has-error{% endif %}">
+          <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }} <span aria-hidden="true" class="required-star">*</span></label>
+          {{ form.latitude }}
+          {% if form.latitude.errors %}<span class="error-msg" role="alert">{{ form.latitude.errors.0 }}</span>{% endif %}
+        </div>
+        <div class="form-group {% if form.longitude.errors %}has-error{% endif %}">
+          <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }} <span aria-hidden="true" class="required-star">*</span></label>
+          {{ form.longitude }}
+          {% if form.longitude.errors %}<span class="error-msg" role="alert">{{ form.longitude.errors.0 }}</span>{% endif %}
+        </div>
+      </div>
+      <p class="field-hint">
+        💡 Vous pouvez obtenir les coordonnées sur
+        <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">Google Maps</a>
+        (clic droit → "Qu'y a-t-il ici ?").
+      </p>
+    </fieldset>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary btn-lg">
+        <span>Estimer le prix</span>
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
+    <p class="form-note">
+      <span aria-hidden="true">*</span> Champs obligatoires.
+      Les données saisies sont transmises à notre modèle IA et conservées dans votre historique.
+    </p>
+  </form>
+</div>
+{% endblock %}

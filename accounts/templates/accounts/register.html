@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Créer un compte{% endblock %}
+
+{% block content %}
+<div class="container container--narrow">
+  <header class="page-header">
+    <h1>Créer un <span class="accent">compte</span></h1>
+    <p class="subtitle">Rejoignez ImmoPredictor pour commencer à estimer vos biens.</p>
+  </header>
+
+  <form method="post" class="auth-form" novalidate aria-label="Formulaire de création de compte">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">
+        {{ field.label }}
+        {% if field.field.required %}<span class="required-star" aria-hidden="true">*</span>{% endif %}
+      </label>
+      {{ field }}
+      {% if field.help_text %}
+      <span class="field-hint" id="{{ field.id_for_label }}-hint">{{ field.help_text }}</span>
+      {% endif %}
+      {% if field.errors %}
+      <span class="error-msg" role="alert">{{ field.errors.0 }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn-primary btn-full">Créer mon compte</button>
+    <p class="auth-link">Déjà un compte ? <a href="{% url 'login' %}">Se connecter</a></p>
+  </form>
+</div>
+{% endblock %}

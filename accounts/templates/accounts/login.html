@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<div class="container container--narrow">
+  <header class="page-header">
+    <h1>Se <span class="accent">connecter</span></h1>
+  </header>
+
+  <form method="post" class="auth-form" novalidate aria-label="Formulaire de connexion">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="error-card" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<span class="error-msg" role="alert">{{ field.errors.0 }}</span>{% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn-primary btn-full">Connexion</button>
+    <p class="auth-link">Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+  </form>
+</div>
+{% endblock %}

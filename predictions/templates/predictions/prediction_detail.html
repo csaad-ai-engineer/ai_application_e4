@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Estimation #{{ prediction.pk }}{% endblock %}
+
+{% block content %}
+<div class="container container--narrow">
+  <a href="{% url 'prediction_history' %}" class="back-link">← Retour à l'historique</a>
+
+  <header class="page-header">
+    <h1>Estimation <span class="accent">#{{ prediction.pk }}</span></h1>
+    <p class="subtitle">{{ prediction.created_at|date:"d/m/Y à H:i" }}</p>
+  </header>
+
+  {% if prediction.status == 'success' %}
+  <!-- Résultat principal -->
+  <div class="result-hero" aria-label="Résultat de l'estimation">
+    <div class="result-price">
+      <span class="price-label">Prix estimé</span>
+      <span class="price-value">{{ prediction.prix_estime|floatformat:0 }} €</span>
+      <span class="price-m2">soit {{ prediction.prix_m2|floatformat:0 }} €/m²</span>
+    </div>
+    <div class="result-interval" aria-label="Intervalle de confiance">
+      <span class="interval-label">Fourchette</span>
+      <span class="interval-value">
+        {{ prediction.intervalle_bas|floatformat:0 }} €
+        <span aria-label="à">—</span>
+        {{ prediction.intervalle_haut|floatformat:0 }} €
+      </span>
+    </div>
+  </div>
+
+  <!-- Données du bien -->
+  <section class="detail-section">
+    <h2>Caractéristiques du bien</h2>
+    <dl class="detail-list">
+      <div class="detail-item">
+        <dt>Type</dt>
+        <dd>{{ prediction.type_local }}</dd>
+      </div>
+      <div class="detail-item">
+        <dt>Surface bâtie</dt>
+        <dd>{{ prediction.surface_reelle_bati }} m²</dd>
+      </div>
+      <div class="detail-item">
+        <dt>Pièces principales</dt>
+        <dd>{{ prediction.nombre_pieces_principales }}</dd>
+      </div>
+      {% if prediction.surface_terrain %}
+      <div class="detail-item">
+        <dt>Surface terrain</dt>
+        <dd>{{ prediction.surface_terrain }} m²</dd>
+      </div>
+      {% endif %}
+      <div class="detail-item">
+        <dt>Département</dt>
+        <dd>{{ prediction.code_departement }}</dd>
+      </div>
+      <div class="detail-item">
+        <dt>Coordonnées</dt>
+        <dd>{{ prediction.latitude }}, {{ prediction.longitude }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="detail-section">
+    <h2>Informations techniques</h2>
+    <dl class="detail-list">
+      <div class="detail-item">
+        <dt>Modèle IA</dt>
+        <dd>{{ prediction.modele_version|default:"N/A" }}</dd>
+      </div>
+      <div class="detail-item">
+        <dt>Latence API</dt>
+        <dd>{{ prediction.latence_api_ms|floatformat:0|default:"N/A" }} ms</dd>
+      </div>
+    </dl>
+  </section>
+
+  {% else %}
+  <div class="error-card" role="alert">
+    <h2>Échec de l'estimation</h2>
+    <p>{{ prediction.error_message }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Actions -->
+  <div class="form-actions form-actions--row">
+    <a href="{% url 'predict' %}" class="btn-secondary">Nouvelle estimation</a>
+    <form method="post" action="{% url 'prediction_delete' prediction.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger"
+        onclick="return confirm('Supprimer cette estimation ?')">
+        Supprimer
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

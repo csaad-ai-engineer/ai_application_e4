@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Exporter mes données{% endblock %}
+{% block content %}
+<div class="container container--narrow">
+  <h1>Exporter mes <span class="accent">données</span></h1>
+  <p>Conformément au RGPD (Article 20), vous pouvez télécharger l'ensemble de vos données personnelles au format JSON.</p>
+  <form method="post" class="auth-form">
+    {% csrf_token %}
+    <div class="form-group checkbox-group">
+      {{ form.confirm }}
+      <label for="{{ form.confirm.id_for_label }}">{{ form.confirm.label }}</label>
+    </div>
+    <button type="submit" class="btn-primary">Télécharger mes données</button>
+  </form>
+</div>
+{% endblock %}

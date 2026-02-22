@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Droit à l'oubli{% endblock %}
+{% block content %}
+<div class="container container--narrow">
+  <h1>Droit à l'<span class="accent">oubli</span></h1>
+  <div class="info-card info-card--warning">
+    <strong>⚠ Attention :</strong> Cette action est irréversible. Toutes vos données seront définitivement supprimées dans un délai de 30 jours.
+  </div>
+  <form method="post" class="auth-form">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<span class="error-msg" role="alert">{{ field.errors.0 }}</span>{% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn-danger btn-full">Demander la suppression de mon compte</button>
+    <a href="{% url 'dashboard' %}" class="btn-ghost btn-full">Annuler</a>
+  </form>
+</div>
+{% endblock %}

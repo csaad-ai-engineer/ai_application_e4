@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environnement virtuel
+.venv/
+venv/
+env/
+
+# Django
+db.sqlite3
+*.sqlite3
+staticfiles/
+media/
+local_settings.py
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Tests et couverture
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+pytest_cache/
+
+# Docker
+docker-compose.override.yml
+
+# Monitoring
+prometheus_data/
+grafana_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+logs/
+
+# Migrations (optionnel — garde-les si tu veux versionner les migrations)
+# */migrations/0*.py
+
+# GitHub Actions secrets
+*.pem
+*.key

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Supprimer l'estimation{% endblock %}
+{% block content %}
+<div class="container container--narrow">
+  <h1>Confirmer la <span class="accent">suppression</span></h1>
+  <p>Voulez-vous vraiment supprimer l'estimation #{{ prediction.pk }} du {{ prediction.created_at|date:"d/m/Y" }} ?</p>
+  <div class="form-actions form-actions--row">
+    <a href="{% url 'prediction_detail' prediction.pk %}" class="btn-secondary">Annuler</a>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger">Supprimer définitivement</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

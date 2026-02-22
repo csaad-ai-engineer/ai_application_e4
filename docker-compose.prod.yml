@@ -1,0 +1,71 @@
+services:
+  # ─── Base de données PostgreSQL ───────────────────────────────
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER:-immo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-immo_dev_secret}
+      POSTGRES_DB: ${DB_NAME:-immo_db}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-immo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Cache Redis ──────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ─── Application Django ───────────────────────────────────────
+  web:
+    build: .
+    volumes:
+      - media_data:/app/media
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-changeme-in-production}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost}
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: ${DB_NAME:-immo_db}
+      DB_USER: ${DB_USER:-immo}
+      DB_PASSWORD: ${DB_PASSWORD:-immo_dev_secret}
+      DB_HOST: db
+      DB_PORT: "5432"
+      REDIS_URL: redis://redis:6379/0
+      PREDICTION_API_URL: ${PREDICTION_API_URL:-http://api:8000}
+      PREDICTION_API_USERNAME: ${PREDICTION_API_USERNAME:-user}
+      PREDICTION_API_PASSWORD: ${PREDICTION_API_PASSWORD:-user}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  # ─── Reverse proxy Nginx ──────────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - media_data:/app/media:ro
+      - static_data:/app/staticfiles:ro
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
+  static_data:

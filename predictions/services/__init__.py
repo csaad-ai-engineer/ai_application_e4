@@ -105,7 +105,7 @@ class PredictionAPIClient:
         chunk_size = 100
 
         for i in range(0, len(items), chunk_size):
-            chunk = items[i: i + chunk_size]
+            chunk = items[i : i + chunk_size]
             url = f"{self.base_url}/predict/batch"
 
             try:

@@ -193,6 +193,8 @@ class TestBatch:
             result = client.predict_batch(items)
             assert mock_post.call_count == 3  # 3 chunks de 100
             assert len(result) == 250
+
+
 # ─── Tests health ─────────────────────────────────────────────────────────────
 
 

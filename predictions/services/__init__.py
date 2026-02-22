@@ -1,12 +1,13 @@
 import logging
 import time
 from typing import Optional
+
 import requests
+from django.conf import settings
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from django.conf import settings
 
-logger = logging.getLogger('predictions')
+logger = logging.getLogger("predictions")
 
 
 class APIClientError(Exception):
@@ -18,7 +19,7 @@ class APIClientError(Exception):
 class PredictionAPIClient:
 
     def __init__(self):
-        self.base_url = settings.PREDICTION_API_URL.rstrip('/')
+        self.base_url = settings.PREDICTION_API_URL.rstrip("/")
         self.username = settings.PREDICTION_API_USERNAME
         self.password = settings.PREDICTION_API_PASSWORD
         self.timeout = settings.PREDICTION_API_TIMEOUT
@@ -30,18 +31,18 @@ class PredictionAPIClient:
             total=3,
             backoff_factor=0.5,
             status_forcelist=[500, 502, 503, 504],
-            allowed_methods=['POST', 'GET'],
+            allowed_methods=["POST", "GET"],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.session.mount('http://', adapter)
-        self.session.mount('https://', adapter)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
 
     def _authenticate(self) -> str:
         url = f"{self.base_url}/token"
         try:
             response = self.session.post(
                 url,
-                json={'username': self.username, 'password': self.password},
+                json={"username": self.username, "password": self.password},
                 timeout=self.timeout,
             )
             response.raise_for_status()
@@ -51,7 +52,7 @@ class PredictionAPIClient:
             raise APIClientError(f"Erreur d'authentification : {e}")
 
         data = response.json()
-        token = data.get('access_token')
+        token = data.get("access_token")
         if not token:
             raise APIClientError("Token absent dans la réponse d'authentification.")
 
@@ -65,8 +66,8 @@ class PredictionAPIClient:
 
     def _headers(self) -> dict:
         return {
-            'Authorization': f"Bearer {self._get_token()}",
-            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {self._get_token()}",
+            "Content-Type": "application/json",
         }
 
     def predict(self, payload: dict) -> dict:
@@ -86,10 +87,12 @@ class PredictionAPIClient:
         except requests.HTTPError as e:
             detail = ""
             try:
-                detail = e.response.json().get('detail', '')
+                detail = e.response.json().get("detail", "")
             except Exception:
                 pass
-            raise APIClientError(f"Erreur HTTP {e.response.status_code}: {detail}", e.response.status_code)
+            raise APIClientError(
+                f"Erreur HTTP {e.response.status_code}: {detail}", e.response.status_code
+            )
         except requests.RequestException as e:
             raise APIClientError(f"Erreur réseau : {e}")
         return response.json()
@@ -102,24 +105,18 @@ class PredictionAPIClient:
         chunk_size = 100
 
         for i in range(0, len(items), chunk_size):
-            chunk = items[i:i + chunk_size]
+            chunk = items[i : i + chunk_size]
             url = f"{self.base_url}/predict/batch"
 
             try:
                 response = self.session.post(
-                    url,
-                    json=chunk,
-                    headers=self._headers(),
-                    timeout=self.timeout * 5
+                    url, json=chunk, headers=self._headers(), timeout=self.timeout * 5
                 )
 
                 if response.status_code == 401:
                     self._token = None
                     response = self.session.post(
-                        url,
-                        json=chunk,
-                        headers=self._headers(),
-                        timeout=self.timeout * 5
+                        url, json=chunk, headers=self._headers(), timeout=self.timeout * 5
                     )
 
                 response.raise_for_status()

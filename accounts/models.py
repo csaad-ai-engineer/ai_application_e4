@@ -5,8 +5,7 @@ from django.db import models
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     consentement_rgpd = models.BooleanField(
-        default=False,
-        help_text="L'utilisateur a accepté la politique de confidentialité."
+        default=False, help_text="L'utilisateur a accepté la politique de confidentialité."
     )
     consentement_date = models.DateTimeField(null=True, blank=True)
     demande_suppression = models.BooleanField(default=False)
@@ -14,17 +13,17 @@ class User(AbstractUser):
 
     # ↓ Ces deux lignes corrigent l'erreur
     groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='accounts_user_set',
+        "auth.Group",
+        related_name="accounts_user_set",
         blank=True,
     )
     user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='accounts_user_set',
+        "auth.Permission",
+        related_name="accounts_user_set",
         blank=True,
     )
 
-    REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = ["email"]
 
     class Meta:
         verbose_name = "Utilisateur"

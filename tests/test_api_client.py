@@ -174,28 +174,25 @@ class TestBatch:
             mock_post.assert_not_called()
 
     def test_predict_batch_chunks_large_input(self, client):
-        """Un batch > 100 items doit être découpé en chunks de 100."""
+        """Un batch de 250 items doit être découpé en 3 chunks."""
         client._token = "test_token"
         client._token_expires_at = float("inf")
 
+        items = [{"surface_reelle_bati": 50 + i} for i in range(250)]
+
         mock_resp = MagicMock()
-        mock_resp.json.return_value = [MOCK_PREDICTION_RESPONSE]
+        mock_resp.json.side_effect = [
+            [MOCK_PREDICTION_RESPONSE] * 100,
+            [MOCK_PREDICTION_RESPONSE] * 100,
+            [MOCK_PREDICTION_RESPONSE] * 50,
+        ]
         mock_resp.raise_for_status.return_value = None
         mock_resp.status_code = 200
 
-        # items = [{'surface_reelle_bati': 50 + i} for i in range(250)]
-
         with patch.object(client.session, "post", return_value=mock_resp) as mock_post:
-            # Chaque appel retourne 1 résultat — on simule 3 chunks
-            mock_resp.json.side_effect = [
-                [MOCK_PREDICTION_RESPONSE] * 100,
-                [MOCK_PREDICTION_RESPONSE] * 100,
-                [MOCK_PREDICTION_RESPONSE] * 50,
-            ]
-            # result = client.predict_batch(items)
-            assert mock_post.call_count == 3  # 3 chunks
-
-
+            result = client.predict_batch(items)
+            assert mock_post.call_count == 3  # 3 chunks de 100
+            assert len(result) == 250
 # ─── Tests health ─────────────────────────────────────────────────────────────
 
 

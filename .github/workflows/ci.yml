@@ -148,13 +148,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Deploy to Railway staging
-        run: railway up --detach --environment staging
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_STAGING }}
+        uses: bervProject/railway-deploy@main
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN_STAGING }}
+          service: ${{ secrets.RAILWAY_SERVICE_ID }}
 
   # ─── Job 5 : Deploy Production (Railway main) ─────────────
   deploy-production:
@@ -166,10 +164,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Deploy to Railway production
-        run: railway up --detach --environment production
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_PROD }}
+        uses: bervProject/railway-deploy@main
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN_PROD }}
+          service: ${{ secrets.RAILWAY_SERVICE_ID }}

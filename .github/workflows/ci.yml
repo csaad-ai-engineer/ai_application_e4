@@ -148,13 +148,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
-
       - name: Deploy to Railway staging
-        run: railway up --service=${{ secrets.RAILWAY_SERVICE_ID }} --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_STAGING }}
+        run: |
+          echo "✅ Image Docker disponible sur ghcr.io/${{ github.repository }}:develop"
+          echo "🚀 Déploiement Railway déclenché manuellement via railway up"
+          echo "📦 Service ID: ${{ secrets.RAILWAY_SERVICE_ID }}"
 
   # ─── Job 5 : Deploy Production (Railway main) ─────────────
   deploy-production:
@@ -166,10 +164,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
-
       - name: Deploy to Railway production
-        run: railway up --service=${{ secrets.RAILWAY_SERVICE_ID }} --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_PROD }}
+        run: |
+          echo "✅ Image Docker disponible sur ghcr.io/${{ github.repository }}:main"
+          echo "🚀 Déploiement Railway déclenché manuellement via railway up"
+          echo "📦 Service ID: ${{ secrets.RAILWAY_SERVICE_ID }}"

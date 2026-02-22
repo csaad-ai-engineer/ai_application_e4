@@ -138,7 +138,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ─── Job 4 : Deploy Staging (Railway develop) ─────────────
+# ─── Job 4 : Deploy Staging (Railway develop) ─────────────
   deploy-staging:
     name: Deploy Staging (Railway)
     runs-on: ubuntu-latest
@@ -150,9 +150,11 @@ jobs:
 
       - name: Deploy to Railway staging
         uses: bervProject/railway-deploy@main
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_STAGING }}
         with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN_STAGING }}
           service: ${{ secrets.RAILWAY_SERVICE_ID }}
+          detach: true
 
   # ─── Job 5 : Deploy Production (Railway main) ─────────────
   deploy-production:
@@ -166,6 +168,8 @@ jobs:
 
       - name: Deploy to Railway production
         uses: bervProject/railway-deploy@main
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_PROD }}
         with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN_PROD }}
           service: ${{ secrets.RAILWAY_SERVICE_ID }}
+          detach: true
